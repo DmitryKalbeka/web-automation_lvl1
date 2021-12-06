@@ -2,8 +2,6 @@ import {mobileCatalogPage} from '../pageobjects/goodyCatalogPage'
 import {expect} from 'chai'
 
 export async function verifyIfGoodiesTitleContains(expectedTitle: string): Promise<void> {
-    await mobileCatalogPage.waitUntilGoodiesAreLoaded()
-    await browser.pause(1000)
     const goodiesList = await mobileCatalogPage.getGoodiesCellsList()
     let i = 0
     for await (const goodiesListElement of goodiesList) {
@@ -13,7 +11,6 @@ export async function verifyIfGoodiesTitleContains(expectedTitle: string): Promi
 }
 
 export async function verifyIfPriceSortingIsCorrect(descSorting = true): Promise<void> {
-    await mobileCatalogPage.waitUntilGoodiesAreLoaded()
     const goodiesList = await mobileCatalogPage.getGoodiesCellsList()
     let previousElementPrice = -1
     for (const goodiesListElement of goodiesList) {

@@ -1,19 +1,19 @@
-import TextLabel from "../framework/textLabel"
-import * as assert from "assert"
-import BaseElement from "../framework/baseElement"
-import {ProductGroup} from "./pageElements/productGroup";
-import Button from "../framework/button";
-import {BasePage} from "./basePage";
+import TextLabel from '../framework/textLabel'
+import {expect} from 'chai'
+import BaseElement from '../framework/baseElement'
+import {ProductGroup} from './pageElements/productGroup'
+import Button from '../framework/button'
+import {BasePage} from './basePage'
 
 const GoodyCategory = {
-    mobile: { url: 'https://catalog.onliner.by/mobile', title: 'Мобильные телефоны' }
+    mobile: {url: 'https://catalog.onliner.by/mobile', title: 'Мобильные телефоны'}
 }
 
 export enum FilterLabel {
     Manufacturer = 'Производитель'
 }
 
-export enum MobileFilterValue {
+export enum FilterValue {
     Honor = 'HONOR'
 }
 
@@ -21,7 +21,7 @@ export enum SortingType {
     PriceDesc = 'Дорогие'
 }
 
-class GoodyCatalogPage extends BasePage{
+class GoodyCatalogPage extends BasePage {
 
     constructor(private readonly goodyCategory: { title: string; url: string }) {
         super()
@@ -33,10 +33,6 @@ class GoodyCatalogPage extends BasePage{
 
     private get goodiesArea() {
         return $('#schema-products')
-    }
-
-    private get filteredOutGoodiesCountSection() {
-        return $('.schema-filter-button__state_initial')
     }
 
     get sortButton(): Button {
@@ -51,21 +47,19 @@ class GoodyCatalogPage extends BasePage{
         return new BaseElement($((`//div[@class="schema-filter__label"]/span[text()="${filterLabel}"]/../following::div`)))
     }
 
-    async clickFilterItem(filterSection: BaseElement, filterValue: MobileFilterValue): Promise<void> {
+    async clickFilterItem(filterSection: BaseElement, filterValue: FilterValue): Promise<void> {
         await (await (await filterSection).element.$(`//span[@class="schema-filter__checkbox-text"][text()="${filterValue}"]`)).click()
     }
 
     async verifyIfPageIsOpened(): Promise<void> {
-        assert.strictEqual(await browser.getUrl(), this.goodyCategory.url)
-        assert.strictEqual(await this.title.getText(), this.goodyCategory.title, 'Goody category is wrong')
+        expect(await browser.getUrl()).eq(this.goodyCategory.url, 'Url is incorrect')
+        expect(await this.title.getText()).eq(this.goodyCategory.title, 'Goody category is wrong')
     }
 
     async waitUntilGoodiesAreLoaded(): Promise<void> {
         await this.goodiesArea.waitUntil(async function () {
             return !(await this.getAttribute('class')).includes('processing')
         })
-        //todo to fix
-        await browser.pause(1000)
     }
 
     async getGoodiesCellsList(): Promise<ProductGroup[]> {
@@ -77,10 +71,31 @@ class GoodyCatalogPage extends BasePage{
         return goodiesCellsList
     }
 
-    async selectSorting(sortingType: SortingType): Promise<void>{
+    async selectSortingAndCheckIfIsApplied(sortingType: SortingType): Promise<void> {
+        const firstGoodyElement = await (await this.goodiesArea).$('.schema-product__group')
         await this.sortButton.scrollAndClick()
         const sortTypeButton = new Button($((`//div[@class="schema-order__popover"]//span[text()="${sortingType}"]`)))
         await sortTypeButton.click()
+        await browser.waitUntil(async () => {
+            return !(firstGoodyElement.elementId === (await (await this.goodiesArea).$('.schema-product__group')).elementId)
+        })
+    }
+
+    async selectFilterAndCheckIfIsApplied(filterLabel: FilterLabel, filterValue: FilterValue): Promise<void> {
+        const firstGoodyElement = await (await this.goodiesArea).$('.schema-product__group')
+        const brandFilterSection = await this.getFilterSection(filterLabel)
+        await this.clickFilterItem(brandFilterSection, filterValue)
+        await browser.waitUntil(async () => {
+            return !(firstGoodyElement.elementId === (await (await this.goodiesArea).$('.schema-product__group')).elementId)
+        })
+    }
+
+    async clickNextPageButtonAndCheckIfIsApplied(): Promise<void> {
+        const firstGoodyElement = await (await this.goodiesArea).$('.schema-product__group')
+        await this.nextPageButton.click()
+        await browser.waitUntil(async () => {
+            return !(firstGoodyElement.elementId === (await (await this.goodiesArea).$('.schema-product__group')).elementId)
+        })
     }
 }
 

@@ -1,5 +1,6 @@
-import Button from "../framework/button"
+import Button from '../framework/button'
 import {expect} from 'chai'
+import {BasePage} from './basePage'
 
 export enum NavigationBarItem {
     Electronic = 'Электроника'
@@ -13,7 +14,7 @@ export enum CategoryName {
     Mobile = ' Смартфоны '
 }
 
-class CatalogPage {
+class CatalogPage extends BasePage{
     async getNavigationBarItemByName(name: NavigationBarItem): Promise<Button> {
         return new Button($((`//span[@class="catalog-navigation-classifier__item-title-wrapper"][text()="${name}"]/../..`)))
     }

@@ -1,5 +1,5 @@
-import TextLabel from "../../framework/textLabel";
-import {extractPriceValueFromLabel} from "../../utilites/utilites";
+import TextLabel from '../../framework/textLabel'
+import {extractPriceValueFromLabel} from '../../utilites/utilites'
 
 export class ProductGroup {
 
