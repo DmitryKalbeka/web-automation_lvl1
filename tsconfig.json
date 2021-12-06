@@ -1,0 +1,7 @@
+{
+  "compilerOptions": {
+    "types": ["node", "webdriverio/async", "@wdio/mocha-framework", "@wdio/types"],
+    "target": "es2019",
+    "module": "commonjs"
+  }
+}
