@@ -7,10 +7,10 @@ export default class TextField extends BaseElement {
     }
 
     async enterText(text: string): Promise<void> {
-        return (await this.element).addValue(text)
+        return this.element.addValue(text)
     }
 
     async replaceText(text: string): Promise<void> {
-        return (await this.element).setValue(text)
+        return this.element.setValue(text)
     }
 }

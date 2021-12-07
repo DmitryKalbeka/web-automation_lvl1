@@ -1,11 +1,13 @@
 import {expect} from 'chai'
 import {homePage, TopNavigationItem} from '../pageobjects/homePage'
 import {catalogPage} from '../pageobjects/catalogPage'
-import {FilterLabel, mobileCatalogPage, FilterValue, SortingType} from '../pageobjects/goodyCatalogPage'
+import {FilterLabel, mobileCatalogPage, consoleCatalogPage, FilterValue, SortingType} from '../pageobjects/goodyCatalogPage'
 import {verifyIfGoodiesTitleContains, verifyIfPriceSortingIsCorrect} from '../helpers/goodyCatalogHelper'
 import {logInPage} from '../pageobjects/logInPage'
 import {signUpPage} from '../pageobjects/signUpPage'
 import * as faker from 'faker'
+import {goodyPage} from "../pageobjects/goodyPage";
+import {cartPage} from "../pageobjects/cartPage";
 
 describe('Onliner Test', async () => {
     beforeEach(async () => {
@@ -32,7 +34,7 @@ describe('Onliner Test', async () => {
         await verifyIfPriceSortingIsCorrect()
     });
 
-    it('TestCase 2', async () => {
+    it.skip('TestCase 2', async () => {
         // go to Log In -> Sign Up
         await homePage.logInButton.click()
         await logInPage.signUpLink.click()
@@ -47,5 +49,35 @@ describe('Onliner Test', async () => {
         await signUpPage.passwordField.replaceText(faker.internet.password(10))
         await signUpPage.repeatPasswordField.enterText(faker.internet.password(10))
         expect(await signUpPage.repeatPasswordFieldValidationLabel.waitAndGetText()).eq('Пароли не совпадают', 'Validation message is incorrect')
+    });
+
+    it('TestCase 3', async () => {
+        // go to catalog
+        await (await homePage.getNavigationMenuItemByName(TopNavigationItem.Catalog)).click()
+        expect(await browser.getTitle()).eq('Каталог Onlíner')
+        // go to Console page
+        await catalogPage.goToConsoleCatalog()
+        await consoleCatalogPage.verifyIfPageIsOpened()
+        // open the first goody and add to cart
+        const firstGoody = (await consoleCatalogPage.getGoodiesCellsList())[0]
+        const firstGoodyTitle = await firstGoody.getTitle()
+        await firstGoody.clickTitle()
+        await goodyPage.waitUntilPageIsLoaded()
+        expect(await goodyPage.titleLabel.waitAndGetText()).eq(firstGoodyTitle, 'Opened page title is incorrect')
+        const proposal = (await goodyPage.getProposalsList())[1]
+        const proposalPrice = await proposal.getPrice()
+        await proposal.hover()
+        expect(await proposal.addToCartButton.getText()).eq('В корзину', 'To Cart button is not shown')
+        await proposal.addToCartButton.click()
+        await proposal.goToCartButton.waitForDisplaying()
+        expect(await proposal.addToCartButton.isDisplayed(), 'Add To Cart button is still shown').to.be.false
+        expect(await proposal.goToCartButton.getText()).eq('В корзине', 'To Cart button is not shown')
+        // go to cart
+        await proposal.goToCartButton.click()
+        await cartPage.verifyIfPageIsLoaded()
+        const cartGoodies = await cartPage.getCartGoodies()
+        expect(cartGoodies.length).eq(1, 'Goodies count is incorrect')
+        expect(await cartGoodies[0].getTitle()).eq(firstGoodyTitle, 'Goody title is incorrect')
+        expect(await cartGoodies[0].getPrice()).eq(proposalPrice, 'Goody price is incorrect')
     });
 });

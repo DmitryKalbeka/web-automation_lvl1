@@ -7,11 +7,13 @@ export enum NavigationBarItem {
 }
 
 export enum GoodiesGroupName {
-    MobileAndAccessories = 'Мобильные телефоны и'
+    MobileAndAccessories = 'Мобильные телефоны и',
+    VideoGames = 'Видеоигры'
 }
 
 export enum CategoryName {
-    Mobile = ' Смартфоны '
+    Mobile = ' Смартфоны ',
+    Console = ' Игровые приставки '
 }
 
 class CatalogPage extends BasePage{
@@ -27,14 +29,22 @@ class CatalogPage extends BasePage{
         return new Button($((`//span[@class="catalog-navigation-list__dropdown-title"][text()="${name}"]/..`)))
     }
 
+    async goToCatalog(navigationBarItem: NavigationBarItem, goodiesGroupName: GoodiesGroupName, categoryName: CategoryName): Promise<void> {
+        await (await this.getNavigationBarItemByName(navigationBarItem)).click()
+        const categoryGroupButton = await this.getCategoryInListByName(goodiesGroupName)
+        expect(await categoryGroupButton.isDisplayed(), `${goodiesGroupName} button does not appear`).to.be.ok
+        await categoryGroupButton.hover()
+        const categoryButton = await this.getCategoryByName(categoryName)
+        expect(await categoryButton.isDisplayed(), `${categoryName} category does not appear`).to.be.ok
+        await categoryButton.click()
+    }
+
     async goToMobileCatalog(): Promise<void> {
-        await (await this.getNavigationBarItemByName(NavigationBarItem.Electronic)).click()
-        const mobileAndAccessories = await this.getCategoryInListByName(GoodiesGroupName.MobileAndAccessories)
-        expect(await mobileAndAccessories.isDisplayed(), 'Mobile and accessories button does not appear').to.be.ok
-        await mobileAndAccessories.click()
-        const mobile = await this.getCategoryByName(CategoryName.Mobile)
-        expect(await mobile.isDisplayed(), 'Mobile category does not appear').to.be.ok
-        await mobile.click()
+        await this.goToCatalog(NavigationBarItem.Electronic, GoodiesGroupName.MobileAndAccessories, CategoryName.Mobile)
+    }
+
+    async goToConsoleCatalog(): Promise<void> {
+        await this.goToCatalog(NavigationBarItem.Electronic, GoodiesGroupName.VideoGames, CategoryName.Console)
     }
 }
 

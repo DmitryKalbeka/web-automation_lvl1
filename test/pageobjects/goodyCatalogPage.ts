@@ -6,7 +6,8 @@ import Button from '../framework/button'
 import {BasePage} from './basePage'
 
 const GoodyCategory = {
-    mobile: {url: 'https://catalog.onliner.by/mobile', title: 'Мобильные телефоны'}
+    mobile: {url: 'https://catalog.onliner.by/mobile', title: 'Мобильные телефоны'},
+    console: {url: 'https://catalog.onliner.by/console', title: 'Игровые приставки'}
 }
 
 export enum FilterLabel {
@@ -63,12 +64,7 @@ class GoodyCatalogPage extends BasePage {
     }
 
     async getGoodiesCellsList(): Promise<ProductGroup[]> {
-        const goodies = await (await this.goodiesArea).$$('.schema-product__group')
-        const goodiesCellsList = []
-        for (const goody of goodies) {
-            goodiesCellsList.push(new ProductGroup(goody))
-        }
-        return goodiesCellsList
+        return this.getItemsList(await (await this.goodiesArea).$$('.schema-product__group'), ProductGroup)
     }
 
     async selectSortingAndCheckIfIsApplied(sortingType: SortingType): Promise<void> {
@@ -100,3 +96,4 @@ class GoodyCatalogPage extends BasePage {
 }
 
 export const mobileCatalogPage = new GoodyCatalogPage(GoodyCategory.mobile)
+export const consoleCatalogPage = new GoodyCatalogPage(GoodyCategory.console)

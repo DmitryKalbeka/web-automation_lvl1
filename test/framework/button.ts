@@ -6,21 +6,22 @@ export default class Button extends BaseElement {
         super(element);
     }
 
-    async click(): Promise<void> {
-        return (await this.element).click()
-    }
-
     async scrollAndClick(): Promise<void> {
         await this.scrollIntoView()
-        return (await this.element).click()
+        return this.element.click()
     }
 
     async waitForClickable(): Promise<void | true> {
-        return (await this.element).waitForClickable()
+        return this.element.waitForClickable()
     }
 
     async waitForClickableAndClick(): Promise<void | true> {
         await this.waitForClickable()
         return this.click()
+    }
+
+    async hoverWaitForDisplaying(): Promise<void | true> {
+        await this.hover()
+        return this.waitForDisplaying()
     }
 }
