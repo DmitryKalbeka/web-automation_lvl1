@@ -8,7 +8,18 @@ export default class BaseElement {
         return (await this.element).isDisplayed()
     }
 
+    async isExisting(): Promise<boolean> {
+        return (await this.element).isExisting()
+    }
+
     async getText(): Promise<string> {
+        return (await this.element).getText()
+    }
+
+    async waitAndGetText(): Promise<string> {
+        await browser.waitUntil(async () => {
+            return (await this.element).isExisting()
+        })
         return (await this.element).getText()
     }
 

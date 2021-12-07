@@ -20,7 +20,7 @@ class CatalogPage extends BasePage{
     }
 
     async getCategoryInListByName(name: GoodiesGroupName): Promise<Button> {
-        return new Button($((`//div[@class="catalog-navigation-list__aside-title"][text()[contains(.,"${name}")]]/..`)))
+        return new Button($((`//div[@class="catalog-navigation-list__aside-title"][contains(.,"${name}")]/..`)))
     }
 
     async getCategoryByName(name: CategoryName): Promise<Button> {

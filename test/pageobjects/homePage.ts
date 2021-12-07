@@ -7,6 +7,10 @@ export enum TopNavigationItem {
 
 class HomePage extends BasePage {
 
+    get logInButton(): Button {
+        return new Button($('.auth-bar__item--text'))
+    }
+
     async getNavigationMenuItemByName(name: TopNavigationItem): Promise<Button> {
         return new Button($((`//span[@class="b-main-navigation__text"][text()="${name}"]/..`)))
     }

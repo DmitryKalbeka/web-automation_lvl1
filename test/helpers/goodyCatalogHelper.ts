@@ -3,9 +3,7 @@ import {expect} from 'chai'
 
 export async function verifyIfGoodiesTitleContains(expectedTitle: string): Promise<void> {
     const goodiesList = await mobileCatalogPage.getGoodiesCellsList()
-    let i = 0
     for await (const goodiesListElement of goodiesList) {
-        console.log(`${new Date().toISOString()} - ${i++} - ${await goodiesListElement.getTitle()}`)
         expect(await goodiesListElement.getTitle()).to.contains(expectedTitle, 'Item title is incorrect')
     }
 }

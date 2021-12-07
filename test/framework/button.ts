@@ -18,4 +18,9 @@ export default class Button extends BaseElement {
     async waitForClickable(): Promise<void | true> {
         return (await this.element).waitForClickable()
     }
+
+    async waitForClickableAndClick(): Promise<void | true> {
+        await this.waitForClickable()
+        return this.click()
+    }
 }
