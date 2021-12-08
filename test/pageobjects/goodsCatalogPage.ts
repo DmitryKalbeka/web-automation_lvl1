@@ -56,6 +56,7 @@ class GoodsCatalogPage extends BasePage {
     }
 
     async verifyIfPageIsOpened(): Promise<void> {
+        await this.waitUntilGoodsAreLoaded()
         expect(await browser.getUrl()).eq(this.goodsCategory.url, 'Url is incorrect')
         expect(await this.title.getText()).eq(this.goodsCategory.title, 'Goods category is wrong')
     }

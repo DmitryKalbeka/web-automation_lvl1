@@ -1,4 +1,5 @@
 import { ChainablePromiseElement } from 'webdriverio'
+import {WaitForOptions} from 'webdriverio/build/types'
 
 export default class BaseElement {
 
@@ -39,7 +40,29 @@ export default class BaseElement {
         return this.element.getAttribute(attribute)
     }
 
-    async waitForDisplaying(): Promise<true | void> {
-        return this.element.waitForDisplayed()
+    async waitForDisplaying(handleNegativeCase: boolean = false, waitForOption?: WaitForOptions): Promise<boolean> {
+        if (handleNegativeCase) {
+            try {
+                await this.element.waitForDisplayed(waitForOption)
+                return true
+            } catch (err) {
+                return false
+            }
+        } else {
+            return this.element.waitForDisplayed(waitForOption)
+        }
+    }
+
+    async waitForExist(handleNegativeCase: boolean = false, waitForOption?: WaitForOptions): Promise<boolean> {
+        if (handleNegativeCase) {
+            try {
+                await this.element.waitForExist(waitForOption)
+                return true
+            } catch (err) {
+                return false
+            }
+        } else {
+            return this.element.waitForExist(waitForOption)
+        }
     }
 }

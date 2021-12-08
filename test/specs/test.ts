@@ -11,7 +11,7 @@ import {cartPage} from '../pageobjects/cartPage'
 import {FilterValue as ServiceFilterValue, servicesPage} from '../pageobjects/servicesPage'
 import {extractPriceValueFromLabel, extractTopicsCount} from '../utilites/utilites'
 import {forumPage} from '../pageobjects/forumPage'
-import {forumLastPostsPage} from "../pageobjects/forumLastPostsPage";
+import {forumLastPostsPage} from '../pageobjects/forumLastPostsPage'
 
 describe('Onliner Test', async () => {
     beforeEach(async () => {
@@ -77,7 +77,11 @@ describe('Onliner Test', async () => {
         expect(await proposal.addToCartButton.isDisplayed(), 'Add To Cart button is still shown').to.be.false
         expect(await proposal.goToCartButton.getText()).eq('В корзине', 'To Cart button is not shown')
         // go to cart
-        await proposal.goToCartButton.click()
+        if (await goodsPage.isLeftSideBarShown()) {
+            await goodsPage.leftSidePanelGoToCartButton.click()
+        } else {
+            await proposal.goToCartButton.click()
+        }
         await cartPage.verifyIfPageIsLoaded()
         const cartGoods = await cartPage.getCartGoods()
         expect(cartGoods.length).eq(1, 'Goods count is incorrect')
@@ -108,7 +112,6 @@ describe('Onliner Test', async () => {
         // go to 'Forum' tab
         await homePage.getNavigationMenuItemByName(TopNavigationItem.Forum).click()
         expect(await browser.getTitle()).eq('Форум onliner.by - Главная страница')
-        await forumPage.waitUntilPageIsLoaded()
         // go to 'new in last 24 h' tab
         await forumPage.newInLast24h.click()
         const pageTitle = await forumLastPostsPage.title.getText()
