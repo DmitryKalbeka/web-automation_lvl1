@@ -3,7 +3,8 @@ import {BasePage} from './basePage'
 
 export enum TopNavigationItem {
     Catalog = 'Каталог',
-    Services = 'Услуги'
+    Services = 'Услуги',
+    Forum = 'Форум'
 }
 
 class HomePage extends BasePage {

@@ -15,3 +15,12 @@ export function extractCountFromLabel(textLabel: string): number {
     const matches = regEx.exec(textLabel)
     return parseInt(matches[0].replace(',','.'))
 }
+
+export function extractTopicsCount(textLabel: string): number {
+    if (textLabel === '') {
+        return 0
+    }
+    const regEx = new RegExp(`(?<=найдено)[\\d ]+(?= тем)`)
+    const matches = regEx.exec(textLabel)
+    return parseInt(matches[0].replace(',','.'))
+}

@@ -9,7 +9,9 @@ import * as faker from 'faker'
 import {goodsPage} from '../pageobjects/goodsPage'
 import {cartPage} from '../pageobjects/cartPage'
 import {FilterValue as ServiceFilterValue, servicesPage} from '../pageobjects/servicesPage'
-import {extractPriceValueFromLabel} from '../utilites/utilites'
+import {extractPriceValueFromLabel, extractTopicsCount} from '../utilites/utilites'
+import {forumPage} from '../pageobjects/forumPage'
+import {forumLastPostsPage} from "../pageobjects/forumLastPostsPage";
 
 describe('Onliner Test', async () => {
     beforeEach(async () => {
@@ -34,7 +36,7 @@ describe('Onliner Test', async () => {
         // sort by price
         await mobileCatalogPage.selectSortingAndCheckIfIsApplied(SortingType.PriceDesc)
         await verifyIfPriceSortingIsCorrect()
-    });
+    })
 
     it('TestCase 2', async () => {
         // go to Log In -> Sign Up
@@ -51,7 +53,7 @@ describe('Onliner Test', async () => {
         await signUpPage.passwordField.replaceText(faker.internet.password(10))
         await signUpPage.repeatPasswordField.enterText(faker.internet.password(10))
         expect(await signUpPage.repeatPasswordFieldValidationLabel.waitAndGetText()).eq('Пароли не совпадают', 'Validation message is incorrect')
-    });
+    })
 
     it('TestCase 3', async () => {
         // go to catalog
@@ -81,7 +83,7 @@ describe('Onliner Test', async () => {
         expect(cartGoods.length).eq(1, 'Goods count is incorrect')
         expect(await cartGoods[0].title.getText()).eq(firstGoodsTitle, 'Goods title is incorrect')
         expect(extractPriceValueFromLabel(await cartGoods[0].price.getText())).eq(proposalPrice, 'Goods price is incorrect')
-    });
+    })
 
     it('TestCase 4', async () => {
         // go to 'Services' tab
@@ -100,5 +102,25 @@ describe('Onliner Test', async () => {
         for (const service of services) {
             expect(await service.image.isExisting(), 'Image is absent').to.be.true
         }
-    });
-});
+    })
+
+    it.only('TestCase 5', async () => {
+        // go to 'Forum' tab
+        await homePage.getNavigationMenuItemByName(TopNavigationItem.Forum).click()
+        expect(await browser.getTitle()).eq('Форум onliner.by - Главная страница')
+        await forumPage.waitUntilPageIsLoaded()
+        // go to 'new in last 24 h' tab
+        await forumPage.newInLast24h.click()
+        const pageTitle = await forumLastPostsPage.title.getText()
+        expect(pageTitle).match(new RegExp('Новое за 24 часа\\\n\\(найдено \\d+ тем(а|ы)?\\)'))
+        // check topics count
+        expect(extractTopicsCount(pageTitle)).gte(1, 'Topics count is less than 1')
+        // check creation time of the all topics from the last page
+        await forumLastPostsPage.navigateToLastPageButton.click()
+        await forumLastPostsPage.waitUntilPageIsLoaded()
+        const topicsList = await forumLastPostsPage.getTopicsList()
+        for (const topicCell of topicsList) {
+            expect(await topicCell.timeShiftingOfCreationTime()).lte(24 * 60, 'Creation date is less than last 24h')
+        }
+    })
+})

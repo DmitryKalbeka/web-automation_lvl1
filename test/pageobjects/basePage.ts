@@ -6,7 +6,7 @@ export abstract class BasePage {
         })
     }
 
-    async getItemsList<T>(elements: WebdriverIO.Element[], type: { new (element: WebdriverIO.Element): T; }): Promise<T[]> {
+    protected async getItemsList<T>(elements: WebdriverIO.Element[], type: { new (element: WebdriverIO.Element): T; }): Promise<T[]> {
         const elementsList: T[] = []
         for (const element of elements) {
             elementsList.push(new type(element))
