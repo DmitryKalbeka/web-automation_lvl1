@@ -1,14 +1,14 @@
 import {expect} from 'chai'
 import {homePage, TopNavigationItem} from '../pageobjects/homePage'
 import {catalogPage} from '../pageobjects/catalogPage'
-import {consoleCatalogPage, FilterLabel, mobileCatalogPage, SortingType} from '../pageobjects/goodyCatalogPage'
+import {consoleCatalogPage, FilterLabel, mobileCatalogPage, SortingType, FilterValue as GoodyFilterValue} from '../pageobjects/goodyCatalogPage'
 import {verifyIfGoodiesTitleContains, verifyIfPriceSortingIsCorrect} from '../helpers/goodyCatalogHelper'
 import {logInPage} from '../pageobjects/logInPage'
 import {signUpPage} from '../pageobjects/signUpPage'
 import * as faker from 'faker'
 import {goodyPage} from "../pageobjects/goodyPage";
 import {cartPage} from "../pageobjects/cartPage";
-import {FilterValue, servicesPage} from "../pageobjects/servicesPage";
+import {FilterValue as ServiceFilterValue, servicesPage} from "../pageobjects/servicesPage";
 
 describe('Onliner Test', async () => {
     beforeEach(async () => {
@@ -26,10 +26,10 @@ describe('Onliner Test', async () => {
         await mobileCatalogPage.verifyIfPageIsOpened()
         // filter out by manufacturer = "HONOR"
         await mobileCatalogPage.waitUntilGoodiesAreLoaded()
-        await mobileCatalogPage.selectFilterAndCheckIfIsApplied(FilterLabel.Manufacturer, FilterValue.Honor)
-        await verifyIfGoodiesTitleContains(FilterValue.Honor)
+        await mobileCatalogPage.selectFilterAndCheckIfIsApplied(FilterLabel.Manufacturer, GoodyFilterValue.Honor)
+        await verifyIfGoodiesTitleContains(GoodyFilterValue.Honor)
         await mobileCatalogPage.clickNextPageButtonAndCheckIfIsApplied()
-        await verifyIfGoodiesTitleContains(FilterValue.Honor)
+        await verifyIfGoodiesTitleContains(GoodyFilterValue.Honor)
         // sort by price
         await mobileCatalogPage.selectSortingAndCheckIfIsApplied(SortingType.PriceDesc)
         await verifyIfPriceSortingIsCorrect()
@@ -87,7 +87,7 @@ describe('Onliner Test', async () => {
         await (await homePage.getNavigationMenuItemByName(TopNavigationItem.Services)).click()
         expect(await browser.getTitle()).eq('Заказы на услуги')
         // sort by 'Uncompleted'
-        await servicesPage.selectStatusFilterAndCheckIfIsApplied(FilterValue.Uncompleted)
+        await servicesPage.selectStatusFilterAndCheckIfIsApplied(ServiceFilterValue.Uncompleted)
         const services = await servicesPage.getServicesCellsList()
         for (const service of services) {
             expect(await service.status.getText()).eq('Не выполнен', 'Status is incorrect')
