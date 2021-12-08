@@ -42,6 +42,7 @@ class ServicesPage extends BasePage {
     async selectStatusFilterAndCheckIfIsApplied(filterValue: FilterValue): Promise<void> {
         const firstElement = await this.contentArea.$('.service-offers__unit')
         await this.clickStatusFilter(filterValue)
+        await this.waitUntilPageIsLoaded()
         await browser.waitUntil(async () => {
             return !(firstElement.elementId === (await this.contentArea.$('.service-offers__unit')).elementId)
         })

@@ -68,7 +68,7 @@ describe('Onliner Test', async () => {
         await firstGoods.title.click()
         await goodsPage.waitUntilPageIsLoaded()
         expect(await goodsPage.titleLabel.waitAndGetText()).eq(firstGoodsTitle, 'Opened page title is incorrect')
-        const proposal = (await goodsPage.getProposalsList())[1]
+        const proposal = (await goodsPage.getProposalsList())[0]
         const proposalPrice = extractPriceValueFromLabel(await proposal.price.getText())
         await proposal.hover()
         expect(await proposal.addToCartButton.getText()).eq('В корзину', 'To Cart button is not shown')
@@ -104,7 +104,7 @@ describe('Onliner Test', async () => {
         }
     })
 
-    it.only('TestCase 5', async () => {
+    it('TestCase 5', async () => {
         // go to 'Forum' tab
         await homePage.getNavigationMenuItemByName(TopNavigationItem.Forum).click()
         expect(await browser.getTitle()).eq('Форум onliner.by - Главная страница')
