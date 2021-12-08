@@ -6,3 +6,12 @@ export function extractPriceValueFromLabel(textLabel: string): number {
     const matches = regEx.exec(textLabel)
     return parseFloat(matches[0].replace(',','.'))
 }
+
+export function extractCountFromLabel(textLabel: string): number {
+    if (textLabel === '') {
+        return 0
+    }
+    const regEx = new RegExp(`[\\d ]+`)
+    const matches = regEx.exec(textLabel)
+    return parseInt(matches[0].replace(',','.'))
+}

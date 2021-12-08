@@ -1,13 +1,14 @@
 import {expect} from 'chai'
 import {homePage, TopNavigationItem} from '../pageobjects/homePage'
 import {catalogPage} from '../pageobjects/catalogPage'
-import {FilterLabel, mobileCatalogPage, consoleCatalogPage, FilterValue, SortingType} from '../pageobjects/goodyCatalogPage'
+import {consoleCatalogPage, FilterLabel, mobileCatalogPage, SortingType} from '../pageobjects/goodyCatalogPage'
 import {verifyIfGoodiesTitleContains, verifyIfPriceSortingIsCorrect} from '../helpers/goodyCatalogHelper'
 import {logInPage} from '../pageobjects/logInPage'
 import {signUpPage} from '../pageobjects/signUpPage'
 import * as faker from 'faker'
 import {goodyPage} from "../pageobjects/goodyPage";
 import {cartPage} from "../pageobjects/cartPage";
+import {FilterValue, servicesPage} from "../pageobjects/servicesPage";
 
 describe('Onliner Test', async () => {
     beforeEach(async () => {
@@ -51,7 +52,7 @@ describe('Onliner Test', async () => {
         expect(await signUpPage.repeatPasswordFieldValidationLabel.waitAndGetText()).eq('Пароли не совпадают', 'Validation message is incorrect')
     });
 
-    it('TestCase 3', async () => {
+    it.skip('TestCase 3', async () => {
         // go to catalog
         await (await homePage.getNavigationMenuItemByName(TopNavigationItem.Catalog)).click()
         expect(await browser.getTitle()).eq('Каталог Onlíner')
@@ -79,5 +80,23 @@ describe('Onliner Test', async () => {
         expect(cartGoodies.length).eq(1, 'Goodies count is incorrect')
         expect(await cartGoodies[0].getTitle()).eq(firstGoodyTitle, 'Goody title is incorrect')
         expect(await cartGoodies[0].getPrice()).eq(proposalPrice, 'Goody price is incorrect')
+    });
+
+    it('TestCase 4', async () => {
+        // go to 'Services' tab
+        await (await homePage.getNavigationMenuItemByName(TopNavigationItem.Services)).click()
+        expect(await browser.getTitle()).eq('Заказы на услуги')
+        // sort by 'Uncompleted'
+        await servicesPage.selectStatusFilterAndCheckIfIsApplied(FilterValue.Uncompleted)
+        const services = await servicesPage.getServicesCellsList()
+        for (const service of services) {
+            expect(await service.status.getText()).eq('Не выполнен', 'Status is incorrect')
+        }
+        // to check overall count
+        expect(await servicesPage.getFilteredCount()).gte(1, 'Count is less than 1')
+        // to check image of each service
+        for (const service of services) {
+            expect(await service.image.isExisting(), 'Image is absent').to.be.true
+        }
     });
 });

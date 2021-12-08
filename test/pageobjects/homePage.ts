@@ -2,7 +2,8 @@ import Button from '../framework/button'
 import {BasePage} from './basePage'
 
 export enum TopNavigationItem {
-    Catalog = 'Каталог'
+    Catalog = 'Каталог',
+    Services = 'Услуги'
 }
 
 class HomePage extends BasePage {
