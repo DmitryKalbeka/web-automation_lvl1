@@ -1,8 +1,9 @@
-import TextLabel from '../framework/textLabel'
+import TextLabel from '../framework/elements/textLabel'
 import {BasePage} from './basePage'
-import {ServiceCell} from "./pageElements/serviceCell";
-import {extractCountFromLabel} from "../utilites/utilites";
-import CheckBox from "../framework/checkBox";
+import {ServiceCell} from './pageElements/serviceCell'
+import {extractCountFromLabel} from '../utilites/utilites'
+import CheckBox from '../framework/elements/checkBox'
+import {ChainablePromiseElement} from 'webdriverio'
 
 export enum FilterValue {
     Uncompleted = 'Невыполненные'
@@ -18,7 +19,7 @@ class ServicesPage extends BasePage {
         return new TextLabel($('.service-interaction__sub_main'))
     }
 
-    private get contentArea() {
+    private get contentArea(): ChainablePromiseElement<Promise<WebdriverIO.Element>> {
         return $('.service-filter__part_2')
     }
 
@@ -35,14 +36,14 @@ class ServicesPage extends BasePage {
     }
 
     async getServicesCellsList(): Promise<ServiceCell[]> {
-        return this.getItemsList(await (await this.contentArea).$$('.service-offers__unit'), ServiceCell)
+        return this.getItemsList(await this.contentArea.$$('.service-offers__unit'), ServiceCell)
     }
 
     async selectStatusFilterAndCheckIfIsApplied(filterValue: FilterValue): Promise<void> {
-        const firstElement = await (await this.contentArea).$('.service-offers__unit')
+        const firstElement = await this.contentArea.$('.service-offers__unit')
         await this.clickStatusFilter(filterValue)
         await browser.waitUntil(async () => {
-            return !(firstElement.elementId === (await (await this.contentArea).$('.service-offers__unit')).elementId)
+            return !(firstElement.elementId === (await this.contentArea.$('.service-offers__unit')).elementId)
         })
     }
 

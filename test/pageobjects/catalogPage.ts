@@ -1,4 +1,4 @@
-import Button from '../framework/button'
+import Button from '../framework/elements/button'
 import {expect} from 'chai'
 import {BasePage} from './basePage'
 
@@ -6,7 +6,7 @@ export enum NavigationBarItem {
     Electronic = 'Электроника'
 }
 
-export enum GoodiesGroupName {
+export enum GoodsGroupName {
     MobileAndAccessories = 'Мобильные телефоны и',
     VideoGames = 'Видеоигры'
 }
@@ -17,22 +17,22 @@ export enum CategoryName {
 }
 
 class CatalogPage extends BasePage{
-    async getNavigationBarItemByName(name: NavigationBarItem): Promise<Button> {
+    getNavigationBarItemByName(name: NavigationBarItem): Button {
         return new Button($((`//span[@class="catalog-navigation-classifier__item-title-wrapper"][text()="${name}"]/../..`)))
     }
 
-    async getCategoryInListByName(name: GoodiesGroupName): Promise<Button> {
+    getCategoryInListByName(name: GoodsGroupName): Button {
         return new Button($((`//div[@class="catalog-navigation-list__aside-title"][contains(.,"${name}")]/..`)))
     }
 
-    async getCategoryByName(name: CategoryName): Promise<Button> {
+    getCategoryByName(name: CategoryName): Button {
         return new Button($((`//span[@class="catalog-navigation-list__dropdown-title"][text()="${name}"]/..`)))
     }
 
-    async goToCatalog(navigationBarItem: NavigationBarItem, goodiesGroupName: GoodiesGroupName, categoryName: CategoryName): Promise<void> {
-        await (await this.getNavigationBarItemByName(navigationBarItem)).click()
-        const categoryGroupButton = await this.getCategoryInListByName(goodiesGroupName)
-        expect(await categoryGroupButton.isDisplayed(), `${goodiesGroupName} button does not appear`).to.be.ok
+    async goToCatalog(navigationBarItem: NavigationBarItem, goodsGroupName: GoodsGroupName, categoryName: CategoryName): Promise<void> {
+        await this.getNavigationBarItemByName(navigationBarItem).click()
+        const categoryGroupButton = await this.getCategoryInListByName(goodsGroupName)
+        expect(await categoryGroupButton.isDisplayed(), `${goodsGroupName} button does not appear`).to.be.ok
         await categoryGroupButton.hover()
         const categoryButton = await this.getCategoryByName(categoryName)
         expect(await categoryButton.isDisplayed(), `${categoryName} category does not appear`).to.be.ok
@@ -40,11 +40,11 @@ class CatalogPage extends BasePage{
     }
 
     async goToMobileCatalog(): Promise<void> {
-        await this.goToCatalog(NavigationBarItem.Electronic, GoodiesGroupName.MobileAndAccessories, CategoryName.Mobile)
+        await this.goToCatalog(NavigationBarItem.Electronic, GoodsGroupName.MobileAndAccessories, CategoryName.Mobile)
     }
 
     async goToConsoleCatalog(): Promise<void> {
-        await this.goToCatalog(NavigationBarItem.Electronic, GoodiesGroupName.VideoGames, CategoryName.Console)
+        await this.goToCatalog(NavigationBarItem.Electronic, GoodsGroupName.VideoGames, CategoryName.Console)
     }
 }
 

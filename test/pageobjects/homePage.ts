@@ -1,4 +1,4 @@
-import Button from '../framework/button'
+import Button from '../framework/elements/button'
 import {BasePage} from './basePage'
 
 export enum TopNavigationItem {
@@ -12,7 +12,7 @@ class HomePage extends BasePage {
         return new Button($('.auth-bar__item--text'))
     }
 
-    async getNavigationMenuItemByName(name: TopNavigationItem): Promise<Button> {
+    getNavigationMenuItemByName(name: TopNavigationItem): Button {
         return new Button($((`//span[@class="b-main-navigation__text"][text()="${name}"]/..`)))
     }
 }

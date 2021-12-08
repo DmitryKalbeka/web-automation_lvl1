@@ -1,5 +1,5 @@
-import TextLabel from '../../framework/textLabel'
-import Image from '../../framework/image'
+import TextLabel from '../../framework/elements/textLabel'
+import Image from '../../framework/elements/image'
 
 export class ServiceCell{
 

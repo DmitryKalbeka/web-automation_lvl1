@@ -1,6 +1,6 @@
 import {BasePage} from './basePage'
-import TextLabel from '../framework/textLabel'
-import TextField from '../framework/textField'
+import TextLabel from '../framework/elements/textLabel'
+import TextField from '../framework/elements/textField'
 
 class SignUpPage extends BasePage {
 

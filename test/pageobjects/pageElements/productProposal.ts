@@ -1,6 +1,5 @@
-import Button from '../../framework/button'
-import TextLabel from '../../framework/textLabel';
-import {extractPriceValueFromLabel} from '../../utilites/utilites'
+import Button from '../../framework/elements/button'
+import TextLabel from '../../framework/elements/textLabel'
 
 export class ProductProposal{
     constructor(private readonly element: WebdriverIO.Element) {
@@ -14,12 +13,8 @@ export class ProductProposal{
         return new Button(this.element.$('.button-style_primary'))
     }
 
-    private get priceLabel(): TextLabel {
+    get price(): TextLabel {
         return new TextLabel(this.element.$('.product-aside__price--primary'))
-    }
-
-    async getPrice(): Promise<number> {
-        return extractPriceValueFromLabel(await this.priceLabel.getText())
     }
 
     async hover(): Promise<void> {

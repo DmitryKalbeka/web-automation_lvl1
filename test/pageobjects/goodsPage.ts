@@ -1,8 +1,8 @@
-import TextLabel from '../framework/textLabel'
+import TextLabel from '../framework/elements/textLabel'
 import {BasePage} from './basePage'
 import {ProductProposal} from './pageElements/productProposal'
 
-class GoodyPage extends BasePage {
+class GoodsPage extends BasePage {
 
     get titleLabel(): TextLabel {
         return new TextLabel($('.catalog-masthead__title'))
@@ -13,4 +13,4 @@ class GoodyPage extends BasePage {
     }
 }
 
-export const goodyPage = new GoodyPage()
+export const goodsPage = new GoodsPage()

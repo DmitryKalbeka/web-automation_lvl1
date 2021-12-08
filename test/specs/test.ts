@@ -1,14 +1,15 @@
 import {expect} from 'chai'
 import {homePage, TopNavigationItem} from '../pageobjects/homePage'
 import {catalogPage} from '../pageobjects/catalogPage'
-import {consoleCatalogPage, FilterLabel, mobileCatalogPage, SortingType, FilterValue as GoodyFilterValue} from '../pageobjects/goodyCatalogPage'
-import {verifyIfGoodiesTitleContains, verifyIfPriceSortingIsCorrect} from '../helpers/goodyCatalogHelper'
+import {consoleCatalogPage, FilterLabel, mobileCatalogPage, SortingType, FilterValue as GoodsFilterValue} from '../pageobjects/goodsCatalogPage'
+import {verifyIfGoodsTitleContains, verifyIfPriceSortingIsCorrect} from '../helpers/goodsCatalogHelper'
 import {logInPage} from '../pageobjects/logInPage'
 import {signUpPage} from '../pageobjects/signUpPage'
 import * as faker from 'faker'
-import {goodyPage} from "../pageobjects/goodyPage";
-import {cartPage} from "../pageobjects/cartPage";
-import {FilterValue as ServiceFilterValue, servicesPage} from "../pageobjects/servicesPage";
+import {goodsPage} from '../pageobjects/goodsPage'
+import {cartPage} from '../pageobjects/cartPage'
+import {FilterValue as ServiceFilterValue, servicesPage} from '../pageobjects/servicesPage'
+import {extractPriceValueFromLabel} from '../utilites/utilites'
 
 describe('Onliner Test', async () => {
     beforeEach(async () => {
@@ -17,25 +18,25 @@ describe('Onliner Test', async () => {
         expect(await browser.getTitle()).eq('Onliner')
     })
 
-    it.skip('TestCase 1', async () => {
+    it('TestCase 1', async () => {
         // go to catalog
-        await (await homePage.getNavigationMenuItemByName(TopNavigationItem.Catalog)).click()
+        await homePage.getNavigationMenuItemByName(TopNavigationItem.Catalog).click()
         expect(await browser.getTitle()).eq('Каталог Onlíner')
         // go to Mobile phones tab
         await catalogPage.goToMobileCatalog()
         await mobileCatalogPage.verifyIfPageIsOpened()
         // filter out by manufacturer = "HONOR"
-        await mobileCatalogPage.waitUntilGoodiesAreLoaded()
-        await mobileCatalogPage.selectFilterAndCheckIfIsApplied(FilterLabel.Manufacturer, GoodyFilterValue.Honor)
-        await verifyIfGoodiesTitleContains(GoodyFilterValue.Honor)
+        await mobileCatalogPage.waitUntilGoodsAreLoaded()
+        await mobileCatalogPage.selectFilterAndCheckIfIsApplied(FilterLabel.Manufacturer, GoodsFilterValue.Honor)
+        await verifyIfGoodsTitleContains(GoodsFilterValue.Honor)
         await mobileCatalogPage.clickNextPageButtonAndCheckIfIsApplied()
-        await verifyIfGoodiesTitleContains(GoodyFilterValue.Honor)
+        await verifyIfGoodsTitleContains(GoodsFilterValue.Honor)
         // sort by price
         await mobileCatalogPage.selectSortingAndCheckIfIsApplied(SortingType.PriceDesc)
         await verifyIfPriceSortingIsCorrect()
     });
 
-    it.skip('TestCase 2', async () => {
+    it('TestCase 2', async () => {
         // go to Log In -> Sign Up
         await homePage.logInButton.click()
         await logInPage.signUpLink.click()
@@ -52,21 +53,21 @@ describe('Onliner Test', async () => {
         expect(await signUpPage.repeatPasswordFieldValidationLabel.waitAndGetText()).eq('Пароли не совпадают', 'Validation message is incorrect')
     });
 
-    it.skip('TestCase 3', async () => {
+    it('TestCase 3', async () => {
         // go to catalog
-        await (await homePage.getNavigationMenuItemByName(TopNavigationItem.Catalog)).click()
+        await homePage.getNavigationMenuItemByName(TopNavigationItem.Catalog).click()
         expect(await browser.getTitle()).eq('Каталог Onlíner')
         // go to Console page
         await catalogPage.goToConsoleCatalog()
         await consoleCatalogPage.verifyIfPageIsOpened()
-        // open the first goody and add to cart
-        const firstGoody = (await consoleCatalogPage.getGoodiesCellsList())[0]
-        const firstGoodyTitle = await firstGoody.getTitle()
-        await firstGoody.clickTitle()
-        await goodyPage.waitUntilPageIsLoaded()
-        expect(await goodyPage.titleLabel.waitAndGetText()).eq(firstGoodyTitle, 'Opened page title is incorrect')
-        const proposal = (await goodyPage.getProposalsList())[1]
-        const proposalPrice = await proposal.getPrice()
+        // open the first goods and add to cart
+        const firstGoods = (await consoleCatalogPage.getGoodsCellsList())[0]
+        const firstGoodsTitle = await firstGoods.title.getText()
+        await firstGoods.title.click()
+        await goodsPage.waitUntilPageIsLoaded()
+        expect(await goodsPage.titleLabel.waitAndGetText()).eq(firstGoodsTitle, 'Opened page title is incorrect')
+        const proposal = (await goodsPage.getProposalsList())[1]
+        const proposalPrice = extractPriceValueFromLabel(await proposal.price.getText())
         await proposal.hover()
         expect(await proposal.addToCartButton.getText()).eq('В корзину', 'To Cart button is not shown')
         await proposal.addToCartButton.click()
@@ -76,16 +77,17 @@ describe('Onliner Test', async () => {
         // go to cart
         await proposal.goToCartButton.click()
         await cartPage.verifyIfPageIsLoaded()
-        const cartGoodies = await cartPage.getCartGoodies()
-        expect(cartGoodies.length).eq(1, 'Goodies count is incorrect')
-        expect(await cartGoodies[0].getTitle()).eq(firstGoodyTitle, 'Goody title is incorrect')
-        expect(await cartGoodies[0].getPrice()).eq(proposalPrice, 'Goody price is incorrect')
+        const cartGoods = await cartPage.getCartGoods()
+        expect(cartGoods.length).eq(1, 'Goods count is incorrect')
+        expect(await cartGoods[0].title.getText()).eq(firstGoodsTitle, 'Goods title is incorrect')
+        expect(extractPriceValueFromLabel(await cartGoods[0].price.getText())).eq(proposalPrice, 'Goods price is incorrect')
     });
 
     it('TestCase 4', async () => {
         // go to 'Services' tab
-        await (await homePage.getNavigationMenuItemByName(TopNavigationItem.Services)).click()
+        await homePage.getNavigationMenuItemByName(TopNavigationItem.Services).click()
         expect(await browser.getTitle()).eq('Заказы на услуги')
+        await servicesPage.waitUntilPageIsLoaded()
         // sort by 'Uncompleted'
         await servicesPage.selectStatusFilterAndCheckIfIsApplied(ServiceFilterValue.Uncompleted)
         const services = await servicesPage.getServicesCellsList()

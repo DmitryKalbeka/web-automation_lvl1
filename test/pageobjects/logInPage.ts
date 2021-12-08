@@ -1,5 +1,5 @@
 import {BasePage} from './basePage'
-import Button from '../framework/button'
+import Button from '../framework/elements/button'
 
 class LogInPage extends BasePage {
 
